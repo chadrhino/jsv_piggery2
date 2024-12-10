@@ -85,7 +85,7 @@ function handleFailedAttempt() {
       <br>
 
           <div class="container-login100-form-btn">
-            <button class="login100-form-btn" name="submit" type="submit" id="Button" disabled>
+            <button class="login100-form-btn" name="submit" type="submit" id="Button" disable>
               Login
             </button>
           </div>
