@@ -10,3 +10,9 @@
 <?php
 require 'users/footer.php';
  ?>
+ <style>
+  body {
+    background: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.4)), url('https://jsvpiggery.com/users/pages/images/piggery.jpg');
+    background-size: cover; 
+    background-position: center; 
+}
