@@ -30,7 +30,7 @@
                 } else {
                 ?>
                     <li class="nav-item">
-                        <a href="login.php" class="btn btn-dark rounded-0">Sign In</a>
+                        <a href="login.php" class="btn btn-dark rounded-0">Admin</a>
                     </li>
                 <?php
                 }
