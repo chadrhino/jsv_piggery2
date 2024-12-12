@@ -33,6 +33,9 @@
       <p class="text-center dont-print" style="margin-top: 5%">
         &copy; All Rights Reserved Chad Rhino Quijano 2024
       </p>
+      <p class="text-center dont-print" style="margin-top: 5%">
+        &copy; Memebers: Chad Rhino Quijano, Christine Mae Sayson
+      </p>
     </footer>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
