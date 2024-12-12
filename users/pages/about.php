@@ -2,7 +2,7 @@
 
 <div class="container py-4">
     <h4>About Us</h4> <style>
-        {color:blue
+        {color: blue;
         }
     </style>
     <p>The JSV Piggery farm management systems have advanced significantly in recent years, using technology to enhance efficiency, productivity, and sustainability. These systems integrate various components such as automated feeding, environmental control, and health monitoring, offering a comprehensive approach to modern pig farming.</p>
