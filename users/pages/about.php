@@ -9,14 +9,15 @@
 
 <?php
 require 'users/footer.php';
- ?>
- <style>
+?>
+<style>
   body {
     background: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.4)), url('https://jsvpiggery.com/users/pages/images/piggery.jpg');
     background-size: cover; 
     background-position: center; 
-}
-    .wrap-input100 {
+  }
+  
+  .wrap-input100 {
     position: relative;
     width: 100%;
     margin-bottom: 20px;
@@ -45,8 +46,15 @@ require 'users/footer.php';
     transform: translateY(-50%);
     transition: all 0.4s;
   }
+
   .txt1 {
     font-size: 14px;
     color: #999999;
     line-height: 1.5;
   }
+
+  /* Added rule for paragraphs */
+  p {
+    color: blue;
+  }
+</style>
