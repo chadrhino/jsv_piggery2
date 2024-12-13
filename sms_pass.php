@@ -44,7 +44,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 ?>
                 <script>
                     setTimeout(() => {
-                        window.location.href = "index.php";
+                        window.location.href = "login.php";
                     }, 3000);
                 </script>
                 <?php
@@ -71,7 +71,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                     ?>
                     <script>
                         setTimeout(() => {
-                            window.location.href = "index.php";
+                            window.location.href = "login.php";
                         }, 3000);
                     </script>
                     <?php
