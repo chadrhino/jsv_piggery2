@@ -64,7 +64,7 @@
                 icon: "success",
                 title: "Account logged out successfully"
             }).then(()=>{
-              window.location.href = "login.php"
+              window.location.href = "login"
             });
             })
         </script>
