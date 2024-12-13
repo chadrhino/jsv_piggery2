@@ -22,7 +22,7 @@
 	 	<div class="col-md-12">
 	 		<a title="Check to delete from list" data-toggle="modal" data-target="#_remove" id="delete"  class="btn btn-danger"><i class="fa fa-trash"></i>
 			</a>
-	 		<form method="post" action="remove_quarantine.php" class="table-responsive">
+	 		<form method="post" action="remove_quarantine" class="table-responsive">
 	 		<table class="table table-hover" id="table">
 	 			<thead>
 	 				<tr>
