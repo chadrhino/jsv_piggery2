@@ -59,7 +59,7 @@ if (isset($_POST['submit'])) {
   $recaptcha_response = $_POST['g-recaptcha-response'];
 
   // Verify reCAPTCHA response with Google
-  $secret_key = "6LerfZoqAAAAAOezcowKEPp1SlkdAYfrXuIQvJTl"; // Replace with your reCAPTCHA secret key
+  $secret_key = "YOUR_SECRET_KEY"; // Replace with your reCAPTCHA secret key
   $url = "https://www.google.com/recaptcha/api/siteverify";
   $data = [
     'secret' => $secret_key,
@@ -158,7 +158,7 @@ if (isset($_POST['submit'])) {
           <i id="showPass" class="fa fa-eye" style="position: absolute; right: 25px; top: 50%; transform: translateY(-50%); cursor: pointer;"></i>
         </div>
 
-        <div class="g-recaptcha" data-sitekey="6LerfZoqAAAAAFVjWq9xPCoxloo8aQRwyay5xzBT" data-callback="recaptchaCallback"></div>
+        <div class="g-recaptcha" data-sitekey="6LeuvIsqAAAAABJsgpWNlWrB9vBl1dwI8DpUcZlr" data-callback="recaptchaCallback"></div>
         <br>
 
         <div class="container-login100-form-btn">
@@ -188,7 +188,6 @@ if (isset($_POST['submit'])) {
 <p class="text-center dont-print" style="margin-top: 6%; color: white;">
   &copy; All Rights Reserved Chad Rhino Quijano 2024
 </p>
- <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 
 <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 
@@ -207,7 +206,6 @@ if (isset($_POST['submit'])) {
   }
 
   function recaptchaCallback() {
-	  function recaptchaCallback() {
     document.getElementById("Button").disabled = false;
   }
 </script>
