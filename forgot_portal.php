@@ -7,6 +7,6 @@
 </head>
 <body>
     <a href="forgot.php">Forgot Gmsadsadail</a>
-    <a href="sms/sms_send.php">Forgoaadasdat SMS</a>
+    <a href="sms_send.php">Forgoaadasdat SMS</a>
 </body>
 </html>a
