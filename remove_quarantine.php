@@ -35,7 +35,7 @@ if (isset($_POST['remove'])) {
                 icon: 'success',
                 title: 'Pig removed from quarantine successfully'
             }).then(() => {
-                window.location.href = 'manage-quarantine';
+                window.location.href = 'manage-quarantinesd';
             });
         </script>";
     } else {
