@@ -6,7 +6,7 @@
     <title>Document</title>
 </head>
 <body>
-    <a href="forgot.php">Forgot Gmail</a>
-    <a href="sms/sms_send.php">Forgot SMS</a>
+    <a href="forgot.php">Forgot Gmsadsadail</a>
+    <a href="sms/sms_send.php">Forgoaadasdat SMS</a>
 </body>
-</html>
+</html>a
