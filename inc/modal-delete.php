@@ -20,7 +20,7 @@
        </div>
 	   <div class="modal-footer">
 		  <button class="btn" data-dismiss="modal" aria-hidden="true"><i class="fa fa-times"></i> Close</button>
-		 <button name="remove" class="btn btn-danger"><i class="fa fa-check"></i> Yes</button>
+		  <button type="submit" name="remove" class="btn btn-danger">Remove</button>
 	   </div>
     </div>
   </div>

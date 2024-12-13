@@ -10,15 +10,15 @@ if (isset($_POST['remove'])) {
         for ($i = 0; $i < $N; $i++) {
             $check = $db->query("SELECT p.id, p.pigno FROM quarantine q INNER JOIN pigs p ON q.pig_no = p.id WHERE q.id = '$id[$i]'");
             $row = $check->fetch(PDO::FETCH_ASSOC);
-            $update_pig = $db->query("UPDATE pigs SET status = '$status' WHERE id = " . $row['id']);
             
+            $update_pig = $db->query("UPDATE pigs SET status = '$status' WHERE id = " . $row['id']);
             if ($update_pig) {
                 $query = $db->query("DELETE FROM quarantine WHERE id = '$id[$i]'");
-                // Log for debugging purposes
                 error_log("Deleted quarantine record with ID: $id[$i]");
+            } else {
+                error_log("Failed to update pig status for pig_id: " . $row['id']);
             }
         }
-        // Notify user via Swal
         echo "<script>
             const Toast = Swal.mixin({
                 toast: true,
@@ -35,11 +35,11 @@ if (isset($_POST['remove'])) {
                 icon: 'success',
                 title: 'Pig removed from quarantine successfully'
             }).then(() => {
-                window.location.href = 'manage-quarantinesd';
+                window.location.href = 'manage_quarantine.php';  // Adjusted path
             });
         </script>";
     } else {
-        header("location: manage-quarantine");
+        header("location: manage_quarantine.php"); // Adjusted path
     }
 }
 ?>
