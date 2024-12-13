@@ -22,33 +22,65 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     } elseif ($newPassword !== $confirmPassword) {
         $error = 'Passwords do not match';
     } else {
-        // Update password based on user session (admin or user)
-        if (isset($_SESSION['is_admin']) && $_SESSION['is_admin'] === true) {
+        // Retrieve the phone number from the session
+        $phone = $_SESSION['reset_phone'];
+
+        // Check if the phone exists in the admin table
+        $stmtAdmin = $db->prepare("SELECT id FROM admin WHERE phone = :phone LIMIT 1");
+        $stmtAdmin->bindParam(':phone', $phone, PDO::PARAM_STR);
+        $stmtAdmin->execute();
+
+        if ($stmtAdmin->rowCount() > 0) {
             // Update admin password
             $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
-            $updateStmt = $db->prepare("UPDATE admin SET password = :password WHERE id = :id");
+            $updateStmt = $db->prepare("UPDATE admin SET password = :password WHERE phone = :phone");
             $updateStmt->bindParam(':password', $hashedPassword, PDO::PARAM_STR);
-            $updateStmt->bindParam(':id', $_SESSION['user_id'], PDO::PARAM_INT);
-        } else {
-            // Update user password
-            $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
-            $updateStmt = $db->prepare("UPDATE users SET password = :password WHERE id = :id");
-            $updateStmt->bindParam(':password', $hashedPassword, PDO::PARAM_STR);
-            $updateStmt->bindParam(':id', $_SESSION['user_id'], PDO::PARAM_INT);
-        }
+            $updateStmt->bindParam(':phone', $phone, PDO::PARAM_STR);
 
-        if ($updateStmt->execute()) {
-            $success = "Password changed successfully. Redirecting in 3 seconds...";
-            unset($_SESSION['otp_verified']); // Clear OTP session
-            ?>
-            <script>
-                setTimeout(() => {
-                    window.location.href = "login.php";
-                }, 3000);
-            </script>
-            <?php
+            if ($updateStmt->execute()) {
+                $success = "Password changed successfully. Redirecting in 3 seconds...";
+                unset($_SESSION['otp_verified']); // Clear OTP session
+                unset($_SESSION['reset_phone']);
+                ?>
+                <script>
+                    setTimeout(() => {
+                        window.location.href = "index.php";
+                    }, 3000);
+                </script>
+                <?php
+            } else {
+                $error = 'Failed to update password. Please try again.';
+            }
         } else {
-            $error = 'Failed to update password. Please try again.';
+            // Check if the phone exists in the users table
+            $stmtUser = $db->prepare("SELECT id FROM users WHERE phone = :phone LIMIT 1");
+            $stmtUser->bindParam(':phone', $phone, PDO::PARAM_STR);
+            $stmtUser->execute();
+
+            if ($stmtUser->rowCount() > 0) {
+                // Update user password
+                $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
+                $updateStmt = $db->prepare("UPDATE users SET password = :password WHERE phone = :phone");
+                $updateStmt->bindParam(':password', $hashedPassword, PDO::PARAM_STR);
+                $updateStmt->bindParam(':phone', $phone, PDO::PARAM_STR);
+
+                if ($updateStmt->execute()) {
+                    $success = "Password changed successfully. Redirecting in 3 seconds...";
+                    unset($_SESSION['otp_verified']); // Clear OTP session
+                    unset($_SESSION['reset_phone']);
+                    ?>
+                    <script>
+                        setTimeout(() => {
+                            window.location.href = "index.php";
+                        }, 3000);
+                    </script>
+                    <?php
+                } else {
+                    $error = 'Failed to update password. Please try again.';
+                }
+            } else {
+                $error = 'Phone number not found.';
+            }
         }
     }
 }
