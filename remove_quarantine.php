@@ -47,7 +47,7 @@ if (isset($_POST['remove'])) {
                         confirmButtonText: 'OK'
                     }).then((result) => {
                         if (result.isConfirmed) {
-                            window.location.href = 'manage_quarantine.php';
+                            window.location.href = 'manage_quarantine';
                         }
                     });
                 </script>";
