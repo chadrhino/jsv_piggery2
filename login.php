@@ -51,6 +51,87 @@ function handleFailedAttempt() {
         </script>";
         exit();
       }
+
+      if (isset($_POST['submit'])) {
+        $username = htmlspecialchars(stripslashes(trim($_POST['username'])));
+        $password = htmlspecialchars(stripslashes(trim($_POST['password'])));
+        $recaptcha_response = $_POST['recaptcha_response'];
+    
+        // Verify reCAPTCHA response
+        $recaptcha_secret = 'your-secret-key'; // Replace with your actual secret key
+        $recaptcha_url = 'https://www.google.com/recaptcha/api/siteverify';
+        $recaptcha_data = [
+            'secret' => $recaptcha_secret,
+            'response' => $recaptcha_response,
+        ];
+    
+        $recaptcha_options = [
+            'http' => [
+                'method'  => 'POST',
+                'header'  => 'Content-type: application/x-www-form-urlencoded',
+                'content' => http_build_query($recaptcha_data),
+            ],
+        ];
+        $recaptcha_context = stream_context_create($recaptcha_options);
+        $recaptcha_verify = file_get_contents($recaptcha_url, false, $recaptcha_context);
+        $recaptcha_result = json_decode($recaptcha_verify);
+    
+        if ($recaptcha_result->success) {
+            // Proceed with the login process
+            // Check admin table first
+            $get_admin = $db->prepare("SELECT * FROM admin WHERE username = :uname");
+            $get_admin->bindParam(':uname', $username, PDO::PARAM_STR);
+            $get_admin->execute();
+    
+            if ($get_admin->rowCount() > 0) {
+                $row = $get_admin->fetch(PDO::FETCH_OBJ);
+                if (password_verify($password, $row->password)) {
+                    $_SESSION['id'] = $row->id;
+                    $_SESSION['name'] = $row->name;
+                    $_SESSION['user'] = $row->username;
+                    $_SESSION['login_attempts'] = 0; // Reset attempts on success
+                    echo "<script>
+                        Swal.fire({ icon: 'success', title: 'Account signed in successfully', timer: 1500 }).then(() => {
+                            window.location.href = 'dashboard.php';
+                        });
+                    </script>";
+                } else {
+                    handleFailedAttempt();
+                }
+            } else {
+                // Check users table
+                $get_user = $db->prepare("SELECT * FROM users WHERE email = :email");
+                $get_user->bindParam(':email', $username, PDO::PARAM_STR);
+                $get_user->execute();
+    
+                if ($get_user->rowCount() > 0) {
+                    $row = $get_user->fetch(PDO::FETCH_OBJ);
+                    if (password_verify($password, $row->password)) {
+                        $_SESSION['USER_ID'] = $row->id;
+                        $_SESSION['USER_NAME'] = $row->name;
+                        $_SESSION['USER_EMAIL'] = $row->email;
+                        $_SESSION['login_attempts'] = 0; // Reset attempts on success
+                        echo "<script>
+                            Swal.fire({ icon: 'success', title: 'Account signed in successfully', timer: 1500 }).then(() => {
+                                window.location.href = 'index.php?page=product';
+                            });
+                        </script>";
+                    } else {
+                        handleFailedAttempt();
+                    }
+                } else {
+                    handleFailedAttempt();
+                }
+            }
+        } else {
+            echo "<script>
+                Swal.fire({ 
+                    icon: 'error', 
+                    title: 'reCAPTCHA verification failed. Please try again.' 
+                });
+            </script>";
+        }
+    }
 ?>
 
 <div class="container">
@@ -59,50 +140,42 @@ function handleFailedAttempt() {
     <img src="img/pig.png" alt="Jsv" style="width: 120px; height: auto; margin-bottom: 20px;">
 
     <h1 class="text-center"><?php echo NAME_X; ?></h1><br>
-			<form method="post" autocomplete="off" id="loginForm">
-
-        <div class="wrap-input100 validate-input">
-          <input class="input100" type="email" name="username" placeholder="Enter your email" required>
-          <span class="focus-input100"></span>
-          <span class="symbol-input100">
+    <form method="post" autocomplete="off" id="loginForm">
+    <!-- Email and Password fields -->
+    <div class="wrap-input100 validate-input">
+        <input class="input100" type="email" name="username" placeholder="Enter your email" required>
+        <span class="focus-input100"></span>
+        <span class="symbol-input100">
             <i class="fa fa-envelope" aria-hidden="true"></i>
-          </span>
-        </div>
+        </span>
+    </div>
 
-          <div class="wrap-input100 validate-input">
-            <input class="input100" type="password" name="password" placeholder="Enter your password">
-            <span class="focus-input100"></span>
-            <span class="symbol-input100">
-              <i class="fa fa-lock" aria-hidden="true"></i>
-            </span>
-              <i id="showPass" class="fa fa-eye" style="position: absolute; right: 25px; top: 50%; transform: translateY(-50%); cursor: pointer;"></i>
-          </div>
+    <div class="wrap-input100 validate-input">
+        <input class="input100" type="password" name="password" placeholder="Enter your password">
+        <span class="focus-input100"></span>
+        <span class="symbol-input100">
+            <i class="fa fa-lock" aria-hidden="true"></i>
+        </span>
+        <i id="showPass" class="fa fa-eye" style="position: absolute; right: 25px; top: 50%; transform: translateY(-50%); cursor: pointer;"></i>
+    </div>
 
-          <div class="g-recaptcha" 
-          data-sitekey="6LeuvIsqAAAAABJsgpWNlWrB9vBl1dwI8DpUcZlr"
-          data-callback="recaptchaCallback">
-        </div>
-      <br>
+    <!-- reCAPTCHA field -->
+    <div class="g-recaptcha" data-sitekey="6LeuvIsqAAAAABJsgpWNlWrB9vBl1dwI8DpUcZlr" data-callback="recaptchaCallback"></div>
+    <input type="hidden" name="recaptcha_response" id="recaptchaResponse">
 
-          <div class="container-login100-form-btn">
-            <button class="login100-form-btn" name="submit" type="submit" id="Button" >
-              Login
-            </button>
-          </div>
-                
-          <div class="text-center p-t-12">
-            <a class="txt2" href="index.php">
-              Back To Home
-            </a>
-            <span class="txt1">
-            Don't have an account?
-            </span>
-            <a class="txt2" href="signup.php">
-            Sign Up
-            </a>
-          </div> 
-          <a href="forgot_portal.php">Forgot Password</a>
-			</form>
+    <div class="container-login100-form-btn">
+        <button class="login100-form-btn" name="submit" type="submit" id="Button" disabled>
+            Login
+        </button>
+    </div>
+
+    <div class="text-center p-t-12">
+        <a class="txt2" href="index.php">Back To Home</a>
+        <span class="txt1">Don't have an account?</span>
+        <a class="txt2" href="signup.php">Sign Up</a>
+    </div>
+    <a href="forgot_portal.php">Forgot Password</a>
+</form>
 
 			<?php
 
@@ -169,21 +242,24 @@ if (isset($_POST['submit'])) {
 
 
 <script>
-  let password = document.querySelector("input[name='password']");
-  let showPass = document.getElementById("showPass");
+  function recaptchaCallback(response) {
+    document.getElementById("recaptchaResponse").value = response; // Store the response in the hidden field
+    document.getElementById("Button").disabled = false; // Enable the login button
+}
 
-  showPass.onclick = () => {
+let password = document.querySelector("input[name='password']");
+let showPass = document.getElementById("showPass");
+
+showPass.onclick = () => {
     if (password.getAttribute("type") == 'password') {
-      password.setAttribute("type", "text");
-      showPass.classList.replace("fa-eye-slash", "fa-eye");
+        password.setAttribute("type", "text");
+        showPass.classList.replace("fa-eye-slash", "fa-eye");
     } else {
-      password.setAttribute("type", "password");
-      showPass.classList.replace("fa-eye", "fa-eye-slash");
+        password.setAttribute("type", "password");
+        showPass.classList.replace("fa-eye", "fa-eye-slash");
     }
-  }
-	  function recaptchaCallback() {
-    document.getElementById("Button").disabled = false;
-  }
+};ument.getElementById("Button").disabled = false;
+
 </script>
 
 <style>
