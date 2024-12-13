@@ -12,7 +12,7 @@ $dbname = "u510162695_pig";
 
 // define('DB_PORT', '3306');
 
-$conn = new mysqli($servername, $username, $password, $dbname);
+// $conn = new mysqli($servername, $username, $password, $dbname);
 
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
