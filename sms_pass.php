@@ -13,7 +13,6 @@ $error = '';
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     // Get user input
-    $verification = trim($_POST['verification']);
     $newPassword = trim($_POST['new']);
     $confirmPassword = trim($_POST['confirm']);
 
@@ -23,57 +22,33 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     } elseif ($newPassword !== $confirmPassword) {
         $error = 'Passwords do not match';
     } else {
-        // Check verification details in both tables
-        $stmtAdmin = $db->prepare("SELECT * FROM admin WHERE verification = :verification LIMIT 1");
-        $stmtAdmin->bindParam(':verification', $verification, PDO::PARAM_STR);
-        $stmtAdmin->execute();
-
-        $stmtUser = $db->prepare("SELECT * FROM users WHERE verification = :verification LIMIT 1");
-        $stmtUser->bindParam(':verification', $verification, PDO::PARAM_STR);
-        $stmtUser->execute();
-
-        if ($stmtAdmin->rowCount() > 0) {
+        // Update password based on user session (admin or user)
+        if (isset($_SESSION['is_admin']) && $_SESSION['is_admin'] === true) {
             // Update admin password
             $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
-            $updateStmt = $db->prepare("UPDATE admin SET password = :password WHERE verification = :verification");
+            $updateStmt = $db->prepare("UPDATE admin SET password = :password WHERE id = :id");
             $updateStmt->bindParam(':password', $hashedPassword, PDO::PARAM_STR);
-            $updateStmt->bindParam(':verification', $verification, PDO::PARAM_STR);
-
-            if ($updateStmt->execute()) {
-                $success = "Password changed successfully. Redirecting in 3 seconds...";
-                unset($_SESSION['otp_verified']); // Clear OTP session
-                ?>
-                <script>
-                    setTimeout(() => {
-                        window.location.href = "index.php";
-                    }, 3000);
-                </script>
-                <?php
-            } else {
-                $error = 'Failed to update password. Please try again.';
-            }
-        } elseif ($stmtUser->rowCount() > 0) {
+            $updateStmt->bindParam(':id', $_SESSION['user_id'], PDO::PARAM_INT);
+        } else {
             // Update user password
             $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
-            $updateStmt = $db->prepare("UPDATE users SET password = :password WHERE verification = :verification");
+            $updateStmt = $db->prepare("UPDATE users SET password = :password WHERE id = :id");
             $updateStmt->bindParam(':password', $hashedPassword, PDO::PARAM_STR);
-            $updateStmt->bindParam(':verification', $verification, PDO::PARAM_STR);
+            $updateStmt->bindParam(':id', $_SESSION['user_id'], PDO::PARAM_INT);
+        }
 
-            if ($updateStmt->execute()) {
-                $success = "Password changed successfully. Redirecting in 3 seconds...";
-                unset($_SESSION['otp_verified']); // Clear OTP session
-                ?>
-                <script>
-                    setTimeout(() => {
-                        window.location.href = "index.php";
-                    }, 3000);
-                </script>
-                <?php
-            } else {
-                $error = 'Failed to update password. Please try again.';
-            }
+        if ($updateStmt->execute()) {
+            $success = "Password changed successfully. Redirecting in 3 seconds...";
+            unset($_SESSION['otp_verified']); // Clear OTP session
+            ?>
+            <script>
+                setTimeout(() => {
+                    window.location.href = "index.php";
+                }, 3000);
+            </script>
+            <?php
         } else {
-            $error = 'Invalid verification details';
+            $error = 'Failed to update password. Please try again.';
         }
     }
 }
@@ -122,10 +97,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     <?php endif; ?>
 
     <form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
-        <div class="form-group">
-            <label for="verification">Verification Code:</label>
-            <input type="text" class="form-control" id="verification" name="verification" required placeholder="Enter verification code">
-        </div>
         <div class="form-group">
             <label for="new">New Password:</label>
             <input type="password" class="form-control" id="new" name="new" required placeholder="Enter new password" minlength="8">
