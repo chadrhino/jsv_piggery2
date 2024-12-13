@@ -37,13 +37,13 @@ if(isset($_POST['remove'])){
 				icon: "success",
 				title: "Pig removed from quarantine successfully"
 			}).then(() => {
-				window.location.href = "manage-quarantine.php"
+				window.location.href = "manage-quarantine"
 			})
 		</script>
 		<?php 
 		// header("location: manage-quarantine.php");
 	}else{
-		header("location: manage-quarantine.php");
+		header("location: manage-quarantine");
 	}
 }
 ?>
