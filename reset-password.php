@@ -32,61 +32,55 @@
 			</form>
 
 			<?php
+if (isset($_POST['submit'])) {
+    $verification = trim($_POST['verification']);
+    $new = $_POST['new'];
+    $confirm = $_POST['confirm'];
 
-              if (isset($_POST['submit'])) {
-              	$verification = trim($_POST['verification']);
-                $new = $_POST['new'];
-                $confirm = $_POST['confirm'];
-                
-                
-                $q = $db->query("SELECT * FROM admin WHERE verification = '$verification' LIMIT 1 ");
-                $count = $q->rowCount();
+    $q = $db->query("SELECT * FROM admin WHERE verification = '$verification' LIMIT 1");
+    $count = $q->rowCount();
 
-                if($count > 0){
+    if ($count > 0) {
+        if (strlen($new) < 8) {
+            $error = 'Password must be equal or greater than 8 characters';
+        } elseif ($new !== $confirm) {
+            $error = 'Passwords don\'t match';
+        } else {
+            $hashedPassword = password_hash($new, PASSWORD_DEFAULT); // Securely hash the password
+            $update = $db->query("UPDATE admin SET password = '$hashedPassword' WHERE verification = '$verification'");
 
-                    if (strlen($new) < 8) {
-                        $error = 'Password must be equal or greater than 8 characters';
-                    }else if ($new !== $confirm) {
-                        $error = 'Password don\'t match';
-                    }else{
-                        $md5 = sha1($new);
-                        $update = $db->query("UPDATE admin SET password = '$md5' WHERE verification = '$verification'");
-                        if ($update) {
-                            $message = "Password changer successfully, Redirecting in 3seconds...";
-                            ?>
-                            <script>
-                                setTimeout(() => {
-                                    window.location.href = "index.php"
-                                }, 3000);
-                            </script>
-                            <?php 
-                        }
-                    }
+            if ($update) {
+                $message = "Password changed successfully, Redirecting in 3 seconds...";
+                ?>
+                <script>
+                    setTimeout(() => {
+                        window.location.href = "index.php"
+                    }, 3000);
+                </script>
+                <?php 
+            }
+        }
+    } else {
+        $error = 'Incorrect verification details';
+    }
+}
 
-                }else{
-                	$error = 'incorrect login details';
-                }
+if (isset($error)) { ?>
+<br><br>
+<div class="alert alert-danger alert-dismissable">
+    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+    <strong><?php echo $error; ?>.</strong>
+</div>
+<?php }
 
-              }
+if (isset($message)) { ?>
+<br><br>
+<div class="alert alert-success alert-dismissable">
+    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+    <strong><?php echo $message; ?>.</strong>
+</div>
+<?php } ?>
 
-
-            if(isset($error)){ ?>
-            <br><br>
-               <div class="alert alert-danger alert-dismissable">
-                  <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-                  <strong><?php echo $error; ?>.</strong>
-              </div>
-            <?php }
-			?>
-
-            <?php if(isset($message)){ ?>
-            <br><br>
-               <div class="alert alert-success alert-dismissable">
-                  <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-                  <strong><?php echo $message; ?>.</strong>
-              </div>
-            <?php }
-			?>
 
 
 		</div>
