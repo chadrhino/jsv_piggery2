@@ -4,42 +4,84 @@ include 'theme/head.php';
 
 if (isset($_POST['remove'])) {
     if (!empty($_POST['selector'])) {
-        $id = $_POST['selector'];
-        $N = count($id);
+        $ids = $_POST['selector'];
         $status = 1;
-        for ($i = 0; $i < $N; $i++) {
-            $check = $db->query("SELECT p.id, p.pigno FROM quarantine q INNER JOIN pigs p ON q.pig_no = p.id WHERE q.id = '$id[$i]'");
-            $row = $check->fetch(PDO::FETCH_ASSOC);
-            
-            $update_pig = $db->query("UPDATE pigs SET status = '$status' WHERE id = " . $row['id']);
-            if ($update_pig) {
-                $query = $db->query("DELETE FROM quarantine WHERE id = '$id[$i]'");
-                error_log("Deleted quarantine record with ID: $id[$i]");
-            } else {
-                error_log("Failed to update pig status for pig_id: " . $row['id']);
-            }
-        }
-        echo "<script>
-            const Toast = Swal.mixin({
-                toast: true,
-                position: 'top-end',
-                showConfirmButton: false,
-                timer: 1500,
-                timerProgressBar: true,
-                didOpen: (toast) => {
-                    toast.onmouseenter = Swal.stopTimer;
-                    toast.onmouseleave = Swal.resumeTimer;
+        $success = true;
+
+        try {
+            // Use prepared statements for better security
+            $checkStmt = $db->prepare("SELECT p.id, p.pigno FROM quarantine q INNER JOIN pigs p ON q.pig_no = p.id WHERE q.id = :id");
+            $updatePigStmt = $db->prepare("UPDATE pigs SET status = :status WHERE id = :pig_id");
+            $deleteQuarantineStmt = $db->prepare("DELETE FROM quarantine WHERE id = :id");
+
+            foreach ($ids as $id) {
+                // Fetch pig details
+                $checkStmt->bindParam(':id', $id, PDO::PARAM_INT);
+                $checkStmt->execute();
+                $row = $checkStmt->fetch(PDO::FETCH_ASSOC);
+
+                if ($row) {
+                    // Update pig status
+                    $updatePigStmt->bindParam(':status', $status, PDO::PARAM_INT);
+                    $updatePigStmt->bindParam(':pig_id', $row['id'], PDO::PARAM_INT);
+                    $updateSuccess = $updatePigStmt->execute();
+
+                    // Delete from quarantine
+                    $deleteQuarantineStmt->bindParam(':id', $id, PDO::PARAM_INT);
+                    $deleteSuccess = $deleteQuarantineStmt->execute();
+
+                    if (!$updateSuccess || !$deleteSuccess) {
+                        $success = false;
+                        error_log("Failed to process quarantine removal for ID: $id");
+                    }
                 }
-            });
-            Toast.fire({
-                icon: 'success',
-                title: 'Pig removed from quarantine successfully'
-            }).then(() => {
-                window.location.href = 'manage_quarantine.php';  // Adjusted path
+            }
+
+            if ($success) {
+                echo "<script>
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Pigs Removed from Quarantine',
+                        text: 'Successfully removed selected pigs from quarantine list.',
+                        showConfirmButton: true,
+                        confirmButtonText: 'OK'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.href = 'manage_quarantine.php';
+                        }
+                    });
+                </script>";
+            } else {
+                echo "<script>
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Removal Failed',
+                        text: 'Some pigs could not be removed from quarantine.',
+                        showConfirmButton: true
+                    });
+                </script>";
+            }
+        } catch (PDOException $e) {
+            error_log("Database Error: " . $e->getMessage());
+            echo "<script>
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Database Error',
+                    text: 'An error occurred while processing your request.',
+                    showConfirmButton: true
+                });
+            </script>";
+        }
+    } else {
+        // No items selected
+        echo "<script>
+            Swal.fire({
+                icon: 'warning',
+                title: 'No Selection',
+                text: 'Please select at least one pig to remove from quarantine.',
+                showConfirmButton: true
             });
         </script>";
-    } else {
-        header("location: manage_quarantine.php"); // Adjusted path
     }
 }
 ?>
