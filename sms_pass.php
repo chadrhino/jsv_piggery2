@@ -1,9 +1,8 @@
 <?php
+session_start();
+require_once 'conn.php';
 
-include 'conn.php';
-
-
-// Ensure user has verified OTP before they can reset the password
+// Ensure the user has verified their OTP before proceeding
 if (!isset($_SESSION['otp_verified']) || $_SESSION['otp_verified'] !== true) {
     header("Location: sms_send.php");
     exit();
@@ -12,60 +11,85 @@ if (!isset($_SESSION['otp_verified']) || $_SESSION['otp_verified'] !== true) {
 $success = '';
 $error = '';
 
-// Check for verification success message
-if (isset($_SESSION['verification_success'])) {
-    $success = $_SESSION['verification_success'];
-    unset($_SESSION['verification_success']); // Clear the message after displaying
-}
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    // Get user input
+    $verification = trim($_POST['verification']);
+    $newPassword = trim($_POST['new']);
+    $confirmPassword = trim($_POST['confirm']);
 
-
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Sanitize the incoming user input (new password and confirm password)
-    $password = $_POST['new-password'];
-    $confirm_password = $_POST['confirm-password'];
-    $phone = $_SESSION['reset_phone'];  // Assuming phone number is stored in session after OTP verification
-
-    // Check if passwords match
-    if ($password !== $confirm_password) {
-        $error = "Passwords do not match!";
+    // Validate input
+    if (strlen($newPassword) < 8) {
+        $error = 'Password must be at least 8 characters long';
+    } elseif ($newPassword !== $confirmPassword) {
+        $error = 'Passwords do not match';
     } else {
-        // Hash the new password securely using password_hash
-        $hashed_password = password_hash($password, PASSWORD_DEFAULT);  // More secure hashing
+        // Check verification details in both tables
+        $stmtAdmin = $db->prepare("SELECT * FROM admin WHERE verification = :verification LIMIT 1");
+        $stmtAdmin->bindParam(':verification', $verification, PDO::PARAM_STR);
+        $stmtAdmin->execute();
 
-        // Prepare the database query to update the password
-        $stmt = $conn->prepare("UPDATE users SET password = ? WHERE phone = ?");
-        $stmt->bind_param("ss", $hashed_password, $phone);  // Bind parameters securely
+        $stmtUser = $db->prepare("SELECT * FROM users WHERE verification = :verification LIMIT 1");
+        $stmtUser->bindParam(':verification', $verification, PDO::PARAM_STR);
+        $stmtUser->execute();
 
-        if ($stmt->execute()) {
-            // Password updated successfully, clear OTP-related session data
-            unset($_SESSION['otp_verified']);
-            unset($_SESSION['reset_phone']);
+        if ($stmtAdmin->rowCount() > 0) {
+            // Update admin password
+            $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
+            $updateStmt = $db->prepare("UPDATE admin SET password = :password WHERE verification = :verification");
+            $updateStmt->bindParam(':password', $hashedPassword, PDO::PARAM_STR);
+            $updateStmt->bindParam(':verification', $verification, PDO::PARAM_STR);
 
-            $_SESSION['success_message'] = "Your password has been updated successfully!";
-    
-            // Redirect to login page
-            header("Location: login.php");
-            exit();
+            if ($updateStmt->execute()) {
+                $success = "Password changed successfully. Redirecting in 3 seconds...";
+                unset($_SESSION['otp_verified']); // Clear OTP session
+                ?>
+                <script>
+                    setTimeout(() => {
+                        window.location.href = "index.php";
+                    }, 3000);
+                </script>
+                <?php
+            } else {
+                $error = 'Failed to update password. Please try again.';
+            }
+        } elseif ($stmtUser->rowCount() > 0) {
+            // Update user password
+            $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
+            $updateStmt = $db->prepare("UPDATE users SET password = :password WHERE verification = :verification");
+            $updateStmt->bindParam(':password', $hashedPassword, PDO::PARAM_STR);
+            $updateStmt->bindParam(':verification', $verification, PDO::PARAM_STR);
+
+            if ($updateStmt->execute()) {
+                $success = "Password changed successfully. Redirecting in 3 seconds...";
+                unset($_SESSION['otp_verified']); // Clear OTP session
+                ?>
+                <script>
+                    setTimeout(() => {
+                        window.location.href = "index.php";
+                    }, 3000);
+                </script>
+                <?php
+            } else {
+                $error = 'Failed to update password. Please try again.';
+            }
         } else {
-            // Error occurred during the password update
-            $error = "Password update failed. Please try again.";
+            $error = 'Invalid verification details';
         }
-
-        $stmt->close();  // Close the prepared statement
     }
 }
 
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reset Password</title>
+    <title>Password Reset</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f7f6;
+            background-color: #f9f9f9;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -73,116 +97,46 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             margin: 0;
         }
         .container {
-            background-color: #fff;
-            padding: 40px;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            text-align: center;
-            width: 100%;
             max-width: 400px;
-        }
-        h2 {
-            margin-bottom: 20px;
-            font-size: 24px;
-            color: #333;
-        }
-        label {
-            font-size: 16px;
-            color: #333;
-            display: block;
-            margin-bottom: 8px;
-        }
-        input[type="password"] {
-            padding: 10px;
-            width: 100%;
-            font-size: 16px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            margin-bottom: 20px;
-        }
-        button {
-            padding: 10px 20px;
-            font-size: 16px;
-            color: white;
-            background-color: #fd2323;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s, transform 0.3s;
-        }
-        button:hover {
-            background-color: #45a049;
-            transform: translateY(-2px);
-        }
-        button:active {
-            transform: translateY(0);
-        }
-        .error {
-            color: red;
-            margin-bottom: 20px;
-        }
-        .instructions {
-            font-size: 14px;
-            color: #555;
-            margin-top: 10px;
-        }
-
-        .success {
-            color: green;
-            background-color: #e8f5e9;
-            border: 1px solid #c8e6c9;
-            padding: 10px;
-            border-radius: 5px;
-            margin-bottom: 20px;
-            text-align: center;
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
         }
     </style>
 </head>
 <body>
+<div class="container">
+    <h2 class="text-center">Reset Your Password</h2>
 
-    <div class="container">
-        <h2>Reset Your Password</h2>
-        <?php if ($success): ?>
-            <div class="success"><?php echo htmlspecialchars($success); ?></div>
-        <?php endif; ?>
-
-        <!-- Display error message if passwords don't match or update fails -->
-        <?php if ($error): ?>
-            <div class="error"><?php echo htmlspecialchars($error); ?></div>
-        <?php endif; ?>
-
-        <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="POST" onsubmit="return validatePassword()">
-            <label for="new-password">New Password:</label>
-            <input type="password" id="new-password" name="new-password" required placeholder="Enter new password" minlength="8">
-
-            <label for="confirm-password">Confirm Password:</label>
-            <input type="password" id="confirm-password" name="confirm-password" required placeholder="Confirm your password" minlength="8">
-
-            <button type="submit">Reset Password</button>
-        </form>
-
-        <div class="instructions">
-            <p>Password must be at least 8 characters long.</p>
+    <?php if ($error): ?>
+        <div class="alert alert-danger">
+            <?php echo htmlspecialchars($error); ?>
         </div>
-    </div>
+    <?php endif; ?>
 
-    <script>
-        function validatePassword() {
-            // Get the password values
-            var newPassword = document.getElementById("new-password").value;
-            var confirmPassword = document.getElementById("confirm-password").value;
+    <?php if ($success): ?>
+        <div class="alert alert-success">
+            <?php echo htmlspecialchars($success); ?>
+        </div>
+    <?php endif; ?>
 
-            // Check if passwords match
-            if (newPassword !== confirmPassword) {
-                // Show error message and prevent form submission
-                alert("Passwords do not match!");
-                return false;
-            }
-
-            // If passwords match, allow form submission
-            return true;
-        }
-    </script>
+    <form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
+        <div class="form-group">
+            <label for="verification">Verification Code:</label>
+            <input type="text" class="form-control" id="verification" name="verification" required placeholder="Enter verification code">
+        </div>
+        <div class="form-group">
+            <label for="new">New Password:</label>
+            <input type="password" class="form-control" id="new" name="new" required placeholder="Enter new password" minlength="8">
+        </div>
+        <div class="form-group">
+            <label for="confirm">Confirm Password:</label>
+            <input type="password" class="form-control" id="confirm" name="confirm" required placeholder="Confirm new password" minlength="8">
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Reset Password</button>
+    </form>
+</div>
 
 </body>
 </html>
