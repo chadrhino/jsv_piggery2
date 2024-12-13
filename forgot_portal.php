@@ -7,6 +7,6 @@
 </head>
 <body>
     <a href="forgot.php">Forgot Gmail</a>
-    <a href="sms/sms_send.php">Forgot SMS</a>
+    <a href="sms/sms_send">Forgot SMS</a>
 </body>
 </html>
