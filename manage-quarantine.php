@@ -20,8 +20,8 @@
 	 <div class="w3-row">
 	 	<h2>Quarantine List</h2>
 	 	<div class="col-md-12">
-	 		<!-- <a title="Check to delete from list" data-toggle="modal" data-target="#_remove" id="delete"  class="btn btn-danger"><i class="fa fa-trash"></i>
-			</a> -->
+	 		<a title="Check to delete from list" data-toggle="modal" data-target="#_remove" id="delete"  class="btn btn-danger"><i class="fa fa-trash"></i>
+			</a>
 	 		<form method="post" action="remove_quarantine.php" class="table-responsive">
 	 		<table class="table table-hover" id="table">
 	 			<thead>
@@ -89,9 +89,7 @@
 							 <td><?php echo $n->feed; ?> </td>
 							 <td><?php echo $n->vitamins ; ?> </td>
                          	<td> <?php echo $n->reason; ?> </td>
-							<td><button type="button" class="btn btn-danger" data-toggle="modal" data-target="#_remove">
-  <i class="fa fa-trash"></i> Remove
-</button></td>
+							
                          </tr> 
 	 				<?php }
 
