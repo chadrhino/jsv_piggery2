@@ -52,86 +52,86 @@ function handleFailedAttempt() {
         exit();
       }
 
-      if (isset($_POST['submit'])) {
-        $username = htmlspecialchars(stripslashes(trim($_POST['username'])));
-        $password = htmlspecialchars(stripslashes(trim($_POST['password'])));
-        $recaptcha_response = $_POST['recaptcha_response'];
-    
-        // Verify reCAPTCHA response
-        $recaptcha_secret = 'your-secret-key'; // Replace with your actual secret key
-        $recaptcha_url = 'https://www.google.com/recaptcha/api/siteverify';
-        $recaptcha_data = [
-            'secret' => $recaptcha_secret,
-            'response' => $recaptcha_response,
-        ];
-    
-        $recaptcha_options = [
-            'http' => [
-                'method'  => 'POST',
-                'header'  => 'Content-type: application/x-www-form-urlencoded',
-                'content' => http_build_query($recaptcha_data),
-            ],
-        ];
-        $recaptcha_context = stream_context_create($recaptcha_options);
-        $recaptcha_verify = file_get_contents($recaptcha_url, false, $recaptcha_context);
-        $recaptcha_result = json_decode($recaptcha_verify);
-    
-        if ($recaptcha_result->success) {
-            // Proceed with the login process
-            // Check admin table first
-            $get_admin = $db->prepare("SELECT * FROM admin WHERE username = :uname");
-            $get_admin->bindParam(':uname', $username, PDO::PARAM_STR);
-            $get_admin->execute();
-    
-            if ($get_admin->rowCount() > 0) {
-                $row = $get_admin->fetch(PDO::FETCH_OBJ);
+   if (isset($_POST['submit'])) {
+    $username = htmlspecialchars(stripslashes(trim($_POST['username'])));
+    $password = htmlspecialchars(stripslashes(trim($_POST['password'])));
+    $recaptcha_response = $_POST['recaptcha_response'];
+
+    // Verify reCAPTCHA response
+    $recaptcha_secret = 'your-secret-key'; // Replace with your actual secret key
+    $recaptcha_url = 'https://www.google.com/recaptcha/api/siteverify';
+    $recaptcha_data = [
+        'secret' => $recaptcha_secret,
+        'response' => $recaptcha_response,
+    ];
+
+    $recaptcha_options = [
+        'http' => [
+            'method'  => 'POST',
+            'header'  => 'Content-type: application/x-www-form-urlencoded',
+            'content' => http_build_query($recaptcha_data),
+        ],
+    ];
+    $recaptcha_context = stream_context_create($recaptcha_options);
+    $recaptcha_verify = file_get_contents($recaptcha_url, false, $recaptcha_context);
+    $recaptcha_result = json_decode($recaptcha_verify);
+
+    if ($recaptcha_result->success) {
+        // Proceed with the login process
+        // Check admin table first
+        $get_admin = $db->prepare("SELECT * FROM admin WHERE username = :uname");
+        $get_admin->bindParam(':uname', $username, PDO::PARAM_STR);
+        $get_admin->execute();
+
+        if ($get_admin->rowCount() > 0) {
+            $row = $get_admin->fetch(PDO::FETCH_OBJ);
+            if (password_verify($password, $row->password)) {
+                $_SESSION['id'] = $row->id;
+                $_SESSION['name'] = $row->name;
+                $_SESSION['user'] = $row->username;
+                $_SESSION['login_attempts'] = 0; // Reset attempts on success
+                echo "<script>
+                    Swal.fire({ icon: 'success', title: 'Account signed in successfully', timer: 1500 }).then(() => {
+                        window.location.href = 'dashboard.php';
+                    });
+                </script>";
+            } else {
+                handleFailedAttempt();
+            }
+        } else {
+            // Check users table
+            $get_user = $db->prepare("SELECT * FROM users WHERE email = :email");
+            $get_user->bindParam(':email', $username, PDO::PARAM_STR);
+            $get_user->execute();
+
+            if ($get_user->rowCount() > 0) {
+                $row = $get_user->fetch(PDO::FETCH_OBJ);
                 if (password_verify($password, $row->password)) {
-                    $_SESSION['id'] = $row->id;
-                    $_SESSION['name'] = $row->name;
-                    $_SESSION['user'] = $row->username;
+                    $_SESSION['USER_ID'] = $row->id;
+                    $_SESSION['USER_NAME'] = $row->name;
+                    $_SESSION['USER_EMAIL'] = $row->email;
                     $_SESSION['login_attempts'] = 0; // Reset attempts on success
                     echo "<script>
                         Swal.fire({ icon: 'success', title: 'Account signed in successfully', timer: 1500 }).then(() => {
-                            window.location.href = 'dashboard.php';
+                            window.location.href = 'index.php?page=product';
                         });
                     </script>";
                 } else {
                     handleFailedAttempt();
                 }
             } else {
-                // Check users table
-                $get_user = $db->prepare("SELECT * FROM users WHERE email = :email");
-                $get_user->bindParam(':email', $username, PDO::PARAM_STR);
-                $get_user->execute();
-    
-                if ($get_user->rowCount() > 0) {
-                    $row = $get_user->fetch(PDO::FETCH_OBJ);
-                    if (password_verify($password, $row->password)) {
-                        $_SESSION['USER_ID'] = $row->id;
-                        $_SESSION['USER_NAME'] = $row->name;
-                        $_SESSION['USER_EMAIL'] = $row->email;
-                        $_SESSION['login_attempts'] = 0; // Reset attempts on success
-                        echo "<script>
-                            Swal.fire({ icon: 'success', title: 'Account signed in successfully', timer: 1500 }).then(() => {
-                                window.location.href = 'index.php?page=product';
-                            });
-                        </script>";
-                    } else {
-                        handleFailedAttempt();
-                    }
-                } else {
-                    handleFailedAttempt();
-                }
+                handleFailedAttempt();
             }
-        } else {
-            echo "<script>
-                Swal.fire({ 
-                    icon: 'error', 
-                    title: 'reCAPTCHA verification failed. Please try again.' 
-                });
-            </script>";
         }
+    } else {
+        echo "<script>
+            Swal.fire({ 
+                icon: 'error', 
+                title: 'reCAPTCHA verification failed. Please try again.' 
+            });
+        </script>";
     }
+}
 ?>
 
 <div class="container">
@@ -248,19 +248,17 @@ if (isset($_POST['submit'])) {
 }
 
 let password = document.querySelector("input[name='password']");
-let showPass = document.getElementById("showPass");
+  let showPass = document.getElementById("showPass");
 
-showPass.onclick = () => {
-    if (password.getAttribute("type") === 'password') {
-        password.setAttribute("type", "text");
-        showPass.classList.remove("fa-eye");
-        showPass.classList.add("fa-eye-slash");
+  showPass.onclick = () => {
+    if (password.getAttribute("type") == 'password') {
+      password.setAttribute("type", "text");
+      showPass.classList.replace("fa-eye-slash", "fa-eye");
     } else {
-        password.setAttribute("type", "password");
-        showPass.classList.remove("fa-eye-slash");
-        showPass.classList.add("fa-eye");
+      password.setAttribute("type", "password");
+      showPass.classList.replace("fa-eye", "fa-eye-slash");
     }
-
+  
 };ument.getElementById("Button").disabled = false;
 
 </script>
