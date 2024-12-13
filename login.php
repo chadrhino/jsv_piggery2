@@ -251,13 +251,16 @@ let password = document.querySelector("input[name='password']");
 let showPass = document.getElementById("showPass");
 
 showPass.onclick = () => {
-    if (password.getAttribute("type") == 'password') {
+    if (password.getAttribute("type") === 'password') {
         password.setAttribute("type", "text");
-        showPass.classList.replace("fa-eye-slash", "fa-eye");
+        showPass.classList.remove("fa-eye");
+        showPass.classList.add("fa-eye-slash");
     } else {
         password.setAttribute("type", "password");
-        showPass.classList.replace("fa-eye", "fa-eye-slash");
+        showPass.classList.remove("fa-eye-slash");
+        showPass.classList.add("fa-eye");
     }
+
 };ument.getElementById("Button").disabled = false;
 
 </script>
