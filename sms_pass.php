@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once 'conn.php';
+require_once 'test.php';
 
 // Ensure the user has verified their OTP before proceeding
 if (!isset($_SESSION['otp_verified']) || $_SESSION['otp_verified'] !== true) {
