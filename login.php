@@ -247,16 +247,13 @@ if (isset($_POST['submit'])) {
     document.getElementById("Button").disabled = false; // Enable the login button
 }
 
-let password = document.querySelector("input[name='password']");
-let showPass = document.getElementById("showPass");
-
 showPass.onclick = () => {
-    if (password.getAttribute("type") === 'password') {
-      password.setAttribute("type", "password");
+    if (password.getAttribute("type") == 'password') {
+      password.setAttribute("type", "text");
       showPass.classList.replace("fa-eye-slash", "fa-eye");
     } else {
-        password.setAttribute("type", "password");
-        showPass.classList.replace("fa-eye-slash", "fa-eye");
+      password.setAttribute("type", "password");
+      showPass.classList.replace("fa-eye", "fa-eye-slash");
     }
 };
   
