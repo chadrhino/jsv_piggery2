@@ -41,7 +41,7 @@ if (isset($_POST['remove'])) {
                 echo "<script>
                     Swal.fire({
                         icon: 'success',
-                        title: 'Pigs Removed from Quarantine',
+                        title: 'Pigs Removesdfdsfsdfd from Quarantine',
                         text: 'Successfully removed selected pigs from quarantine list.',
                         showConfirmButton: true,
                         confirmButtonText: 'OK'
