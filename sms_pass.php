@@ -26,16 +26,16 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $phone = $_SESSION['reset_phone'];
 
         // Check if the phone exists in the admin table
-        $stmtAdmin = $db->prepare("SELECT id FROM admin WHERE phone = :phone LIMIT 1");
-        $stmtAdmin->bindParam(':phone', $phone, PDO::PARAM_STR);
+        $stmtAdmin = $conn->prepare("SELECT id FROM admin WHERE phone = ? LIMIT 1");
+        $stmtAdmin->bind_param("s", $phone);
         $stmtAdmin->execute();
+        $stmtAdmin->store_result();
 
-        if ($stmtAdmin->rowCount() > 0) {
+        if ($stmtAdmin->num_rows > 0) {
             // Update admin password
             $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
-            $updateStmt = $db->prepare("UPDATE admin SET password = :password WHERE phone = :phone");
-            $updateStmt->bindParam(':password', $hashedPassword, PDO::PARAM_STR);
-            $updateStmt->bindParam(':phone', $phone, PDO::PARAM_STR);
+            $updateStmt = $conn->prepare("UPDATE admin SET password = ? WHERE phone = ?");
+            $updateStmt->bind_param("ss", $hashedPassword, $phone);
 
             if ($updateStmt->execute()) {
                 $success = "Password changed successfully. Redirecting in 3 seconds...";
@@ -53,16 +53,16 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             }
         } else {
             // Check if the phone exists in the users table
-            $stmtUser = $db->prepare("SELECT id FROM users WHERE phone = :phone LIMIT 1");
-            $stmtUser->bindParam(':phone', $phone, PDO::PARAM_STR);
+            $stmtUser = $conn->prepare("SELECT id FROM users WHERE phone = ? LIMIT 1");
+            $stmtUser->bind_param("s", $phone);
             $stmtUser->execute();
+            $stmtUser->store_result();
 
-            if ($stmtUser->rowCount() > 0) {
+            if ($stmtUser->num_rows > 0) {
                 // Update user password
                 $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
-                $updateStmt = $db->prepare("UPDATE users SET password = :password WHERE phone = :phone");
-                $updateStmt->bindParam(':password', $hashedPassword, PDO::PARAM_STR);
-                $updateStmt->bindParam(':phone', $phone, PDO::PARAM_STR);
+                $updateStmt = $conn->prepare("UPDATE users SET password = ? WHERE phone = ?");
+                $updateStmt->bind_param("ss", $hashedPassword, $phone);
 
                 if ($updateStmt->execute()) {
                     $success = "Password changed successfully. Redirecting in 3 seconds...";
