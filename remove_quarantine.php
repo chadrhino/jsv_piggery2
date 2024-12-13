@@ -41,13 +41,13 @@ if (isset($_POST['remove'])) {
                 echo "<script>
                     Swal.fire({
                         icon: 'success',
-                        title: 'Pigs Removesdfdsfsdfd from Quarantine',
+                        title: 'Pigs Removed from Quarantine',
                         text: 'Successfully removed selected pigs from quarantine list.',
                         showConfirmButton: true,
                         confirmButtonText: 'OK'
                     }).then((result) => {
                         if (result.isConfirmed) {
-                            window.location.href = 'manage_quarantine';
+                            window.location.href = 'manage_quarantine.php';
                         }
                     });
                 </script>";
