@@ -177,8 +177,6 @@
 						<label class="control-label">Health Status</label>
 						<select name="status" class="form-control" required>
 							<option value="active">Active</option>
-							<!-- <option value="inactive">Quarantined</option> -->
-							<!-- <option value="on treatment">On treatment</option> -->
 							<option value="sick">Sick</option>
 						</select>
 					</div>
