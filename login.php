@@ -165,7 +165,7 @@ if (isset($_POST['submit'])) {
 <p class="text-center dont-print" style="margin-top: 6%; color: white;">
 	&copy; All Rights Reserved Chad Rhino Quijano 2024
 </p>
- <!-- <script src="https://www.google.com/recaptcha/api.js" async defer></script> -->
+ <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 
 
 <script>
@@ -181,9 +181,9 @@ if (isset($_POST['submit'])) {
       showPass.classList.replace("fa-eye", "fa-eye-slash");
     }
   }
-	//   function recaptchaCallback() {
-  //   document.getElementById("Button").disabled = false;
-  // }
+	  function recaptchaCallback() {
+    document.getElementById("Button").disabled = false;
+  }
 </script>
 
 <style>
