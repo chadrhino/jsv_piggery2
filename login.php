@@ -252,8 +252,8 @@ let showPass = document.getElementById("showPass");
 
 showPass.onclick = () => {
     if (password.getAttribute("type") === 'password') {
-        password.setAttribute("type", "text");
-        showPass.classList.replace("fa-eye", "fa-eye-slash");
+      password.setAttribute("type", "password");
+      showPass.classList.replace("fa-eye-slash", "fa-eye");
     } else {
         password.setAttribute("type", "password");
         showPass.classList.replace("fa-eye-slash", "fa-eye");
