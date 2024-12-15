@@ -155,7 +155,6 @@
         ?>
       </tbody>
     </table>
-				
         <?php
       }
 
@@ -207,43 +206,6 @@
 <button type="button" onclick="print()" class="btn btn-primary dont-print w3-margin-top" style="float: right;"><i class="fa fa-print"></i> Print</button>
   </div>
 
-  <!-- <div class="w3-container" style="padding-top:22px">
-    <h3><b>Pig-Out History</b></h3>
-    <table id="table" class="table table-hover table-bordered" >
-      <thead>
-        <th>#</th>
-        <th>Pig No.</th>
-        <th>Breed</th>
-        <th>Weight</th>
-        <th>Buyer</th>
-        <th>Price</th>
-        <th>Cash</th>
-        <th>Date Sold</th>
-      </thead>
-      <tbody>
-        <?php
-        $i = 1;
-        $get_history_out = $db->query("SELECT p.*, b.name AS breed, s.buyer, s.price AS price_sold, s.money, s.date_sold FROM pigs p INNER JOIN sold s ON p.id = s.pig_id LEFT JOIN breed b ON p.breed_id = b.id ");
-        foreach ($get_history_out as $out) {
-        ?>
-          <tr>
-            <td><?= $i++ ?></td>
-            <td><?= $out['pigno'] ?></td>
-            <td><?= $out['breed'] ?></td>
-            <td><?= $out['weight'] ?></td>
-            <td><?= $out['buyer'] ?></td>
-            <td><?= number_format($out['price_sold']) ?></td>
-            <td><?= number_format($out['money']) ?></td>
-            <td><?= $out['date_sold'] ?></td>
-          </tr>
-        <?php
-        }
-        ?>
-      </tbody>
-    </table>
-  </div> -->
-
-  
   <?php 
     function getSold($month, $conn){
       $year = date('Y');
@@ -280,30 +242,32 @@
   <script>
     var xValues = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
     var yValues = [<?php echo $jan;  ?>, <?php echo $feb;  ?>, <?php echo $mar;  ?>, <?php echo $apr;  ?>, <?php echo $may;  ?>, <?php echo $jun;  ?>, <?php echo $july;  ?>, <?php echo $aug;  ?>, <?php echo $sept;  ?>, <?php echo $oct;  ?>, <?php echo $nov;  ?>, <?php echo $dec;  ?>];
-    // var barColors = ["#478ef2", "#478ef2", "#478ef2", "#478ef2", "#478ef2", "#478ef2", "#478ef2", "#478ef2"];
-    
 
     new Chart("myChart", {
-      type: "line",
+      type: "line", // Area graph using line type
       data: {
         labels: xValues,
         datasets: [{
-          
-          borderColor: "#478ef2",
-          data: yValues
+          label: "Sales",
+          backgroundColor: "rgba(71, 142, 242, 0.2)", // Light fill color for area
+          borderColor: "#478ef2", // Line color
+          data: yValues,
+          fill: true // Enable area fill
         }]
       },
       options: {
         legend: {
-          display: false
+          display: true // Show dataset label
         },
         title: {
           display: true,
           text: "Annual Sales ( <?= number_format($total_sales) ?> )"
         },
         scales: {
-      yAxes: [{ticks: {min: 0}}],
-    }
+          yAxes: [{
+            ticks: { min: 0 }
+          }]
+        }
       }
     });
   </script>
@@ -311,10 +275,9 @@
   <script>
     $(document).ready(function() {
       $("#table").DataTable();
-    })
+    });
   </script>
 
 </div>
-
 
 <?php include 'theme/foot.php'; ?>
