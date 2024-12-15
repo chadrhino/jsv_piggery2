@@ -11,111 +11,63 @@
     <h5><b><i class="fa fa-dashboard"></i> My Dashboard</b></h5>
   </header>
 
-  <?php include 'inc/data.php'; ?>
+  <?php 
+    // Fetch monthly sales data
+    function getSold($month, $conn){
+        $year = date('Y');
+        $stmt = $conn->query("SELECT SUM(price) AS TOTAL FROM sold WHERE MONTH(date_sold) = '$month' AND YEAR(date_sold) = '$year'");
+        if ($stmt->rowCount() > 0) {
+            $fetch = $stmt->fetch(PDO::FETCH_OBJ);
+            return $fetch->TOTAL ?? 0;
+        } else {
+            return 0;
+        }
+    }
+
+    $sales = [
+        getSold("01", $db), getSold("02", $db), getSold("03", $db),
+        getSold("04", $db), getSold("05", $db), getSold("06", $db),
+        getSold("07", $db), getSold("08", $db), getSold("09", $db),
+        getSold("10", $db), getSold("11", $db), getSold("12", $db)
+    ];
+    $total_sales = array_sum($sales);
+  ?>
+
   <div class="w3-container dont-print" style="padding-top:22px">
     <canvas id="myChart" style="width:100%;"></canvas>
   </div>
 
-  <div class="w3-container" style="padding-top:22px" id="history">
-    <h3 class="dont-print"><b>Pig In & Out History</b></h3>
-
-    <!-- Form Section -->
-    <form method="post" class="w3-margin-bottom dont-print">
-      <label>Select Month</label>
-      <input type="month" class="form-control" name="month" min="<?= date('Y-m') ?>" value="<?= isset($_POST['month']) ? $_POST['month'] : '' ?>">
-
-      <div class="w3-margin-top">
-        <label>Select to Show</label>
-        <div style="display: flex; gap: 20px;">
-          <div>
-            <input type="radio" name="type" value="1" <?php echo (isset($_POST['type']) && $_POST['type'] == 1) ? 'checked' : 'checked'; ?> > In
-          </div>
-          <div>
-            <input type="radio" name="type" value="2" <?php echo (isset($_POST['type']) && $_POST['type'] == 2) ? 'checked' : ''; ?>> Out
-          </div>
-        </div>
-      </div>
-
-      <div style="text-align: right;">
-        <button type="submit" class="btn btn-primary w3-margin-top">Show</button>
-      </div>
-    </form>
-
-    <hr class="dont-print">
-
-    <!-- PHP: History Table -->
-    <?php
-    if (isset($_POST['month'])) {
-      $month = date('m', strtotime($_POST['month']));
-      $year = date('Y', strtotime($_POST['month']));
-      $type = $_POST['type'];
-
-      echo "<script>window.location.href = '#history'</script>";
-
-      if ($type == 1) {
-        echo "<h3 class='w3-margin-bottom'><b>Pig In History</b></h3>";
-        include 'inc/pig_in_history.php';
-      } else {
-        echo "<h3 class='w3-margin-bottom'><b>Pig Out History</b></h3>";
-        include 'inc/pig_out_history.php';
-      }
-    } else {
-      echo "<h3 class='w3-margin-bottom'><b>Pig In History</b></h3>";
-      include 'inc/pig_in_history.php';
-    }
-    ?>
-
-    <button type="button" onclick="print()" class="btn btn-primary dont-print w3-margin-top" style="float: right;">
-      <i class="fa fa-print"></i> Print
-    </button>
-  </div>
-
-  <!-- PHP: Fetch Sales Data -->
-  <?php 
-    function getSold($month, $conn) {
-      $year = date('Y');
-      $stmt = $conn->query("SELECT SUM(price) AS TOTAL FROM sold WHERE MONTH(date_sold) = '$month' AND YEAR(date_sold) = '$year'");
-      if ($stmt->rowCount() > 0) {
-        $fetch = $stmt->fetch(PDO::FETCH_OBJ);
-        $result = $fetch->TOTAL;
-      } else {
-        $result = 0;
-      }
-      return $result;
-    }    
-
-    $sales = [];
-    for ($i = 1; $i <= 12; $i++) {
-      $sales[] = getSold(str_pad($i, 2, "0", STR_PAD_LEFT), $db) ?? 0;
-    }
-    $total_sales = array_sum($sales);
-  ?>
-
-  <!-- Chart.js Script -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script>
     var xValues = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-    var yValues = [<?= implode(',', $sales) ?>];
+    var yValues = [<?= implode(',', $sales) ?>]; // Monthly sales data
+
+    // Generate a dataset for each month with distinct styles
+    var datasets = xValues.map((month, index) => {
+      return {
+        label: month,
+        fill: false,
+        borderColor: getRandomColor(), // Generate a random color for each line
+        backgroundColor: getRandomColor(),
+        data: yValues.map((val, i) => (i === index ? val : null)), // Only one data point for the corresponding month
+        tension: 0.4, // Smooth curve for the "wave" effect
+        pointRadius: 5, // Larger points for emphasis
+        pointHoverRadius: 8
+      };
+    });
 
     new Chart("myChart", {
-      type: "line", // Specify the chart type as 'line'
+      type: "line", // Line chart type
       data: {
-        labels: xValues,
-        datasets: [{
-          label: "Monthly Sales",
-          fill: false, // Disable filling the area under the line
-          borderColor: "#478ef2", // Line color
-          backgroundColor: "#478ef2", // Point color
-          data: yValues, // Data points
-          tension: 0.4 // Smooth curves between points
-        }]
+        labels: xValues, // Months as labels
+        datasets: datasets // All datasets for the chart
       },
       options: {
         responsive: true,
         plugins: {
           title: {
             display: true,
-            text: "Annual Sales (<?= number_format($total_sales) ?>)"
+            text: "Monthly Sales Wave (<?= number_format($total_sales) ?>)"
           },
           legend: {
             display: true,
@@ -134,19 +86,18 @@
               display: true,
               text: "Sales (in units)"
             },
-            beginAtZero: true // Ensure the y-axis starts at zero
+            beginAtZero: true
           }
         }
       }
     });
+
+    // Function to generate random colors
+    function getRandomColor() {
+      return `rgba(${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, 1)`;
+    }
   </script>
 
-  <!-- DataTable Script -->
-  <script>
-    $(document).ready(function() {
-      $("#table").DataTable();
-    });
-  </script>
 </div>
 
 <?php include 'theme/foot.php'; ?>
