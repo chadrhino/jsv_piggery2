@@ -207,43 +207,6 @@
 <button type="button" onclick="print()" class="btn btn-primary dont-print w3-margin-top" style="float: right;"><i class="fa fa-print"></i> Print</button>
   </div>
 
-  <!-- <div class="w3-container" style="padding-top:22px">
-    <h3><b>Pig-Out History</b></h3>
-    <table id="table" class="table table-hover table-bordered" >
-      <thead>
-        <th>#</th>
-        <th>Pig No.</th>
-        <th>Breed</th>
-        <th>Weight</th>
-        <th>Buyer</th>
-        <th>Price</th>
-        <th>Cash</th>
-        <th>Date Sold</th>
-      </thead>
-      <tbody>
-        <?php
-        $i = 1;
-        $get_history_out = $db->query("SELECT p.*, b.name AS breed, s.buyer, s.price AS price_sold, s.money, s.date_sold FROM pigs p INNER JOIN sold s ON p.id = s.pig_id LEFT JOIN breed b ON p.breed_id = b.id ");
-        foreach ($get_history_out as $out) {
-        ?>
-          <tr>
-            <td><?= $i++ ?></td>
-            <td><?= $out['pigno'] ?></td>
-            <td><?= $out['breed'] ?></td>
-            <td><?= $out['weight'] ?></td>
-            <td><?= $out['buyer'] ?></td>
-            <td><?= number_format($out['price_sold']) ?></td>
-            <td><?= number_format($out['money']) ?></td>
-            <td><?= $out['date_sold'] ?></td>
-          </tr>
-        <?php
-        }
-        ?>
-      </tbody>
-    </table>
-  </div> -->
-
-  
   <?php 
     function getSold($month, $conn){
       $year = date('Y');
@@ -259,51 +222,100 @@
       return $result;
     }    
 
-    $jan = getSold("01", $db) ?? 0;
-    $feb = getSold("02", $db) ?? 0;
-    $mar = getSold("03", $db) ?? 0;
-    $apr = getSold("04", $db) ?? 0;
-    $may = getSold("05", $db) ?? 0;
-    $jun = getSold("06", $db) ?? 0;
-    $july = getSold("07", $db) ?? 0;
-    $aug = getSold("08", $db) ?? 0;
-    $sept = getSold("09", $db) ?? 0;
-    $oct = getSold("10", $db) ?? 0;
-    $nov = getSold("11", $db) ?? 0;
-    $dec = getSold("12", $db) ?? 0;
+    function getPigIn($month, $conn){
+      $year = date('Y');
 
-    $total_sales = $jan + $feb + $mar + $apr + $may + $jun + $july + $aug + $sept + $oct + $nov + $dec;
+      $stmt = $conn->query("SELECT COUNT(*) AS TOTAL FROM pigs WHERE MONTH(arrived) = '$month' AND YEAR(arrived) = '$year'");
+      
+      if ($stmt->rowCount() > 0) {
+        $fetch = $stmt->fetch(PDO::FETCH_OBJ);
+        $result = $fetch->TOTAL;
+      }else{
+        $result = 0;
+      }
+      return $result;
+    }
 
+    function getPigOut($month, $conn){
+      $year = date('Y');
+
+      $stmt = $conn->query("SELECT COUNT(*) AS TOTAL FROM sold WHERE MONTH(date_sold) = '$month' AND YEAR(date_sold) = '$year'");
+      
+      if ($stmt->rowCount() > 0) {
+        $fetch = $stmt->fetch(PDO::FETCH_OBJ);
+        $result = $fetch->TOTAL;
+      }else{
+        $result = 0;
+      }
+      return $result;
+    }
+
+    $months = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"];
+
+    $salesData = [];
+    $pigInData = [];
+    $pigOutData = [];
+
+    foreach ($months as $month) {
+      $salesData[] = getSold($month, $db) ?? 0;
+      $pigInData[] = getPigIn($month, $db) ?? 0;
+      $pigOutData[] = getPigOut($month, $db) ?? 0;
+    }
+
+    $total_sales = array_sum($salesData);
   ?>
-
 
   <script>
     var xValues = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-    var yValues = [<?php echo $jan;  ?>, <?php echo $feb;  ?>, <?php echo $mar;  ?>, <?php echo $apr;  ?>, <?php echo $may;  ?>, <?php echo $jun;  ?>, <?php echo $july;  ?>, <?php echo $aug;  ?>, <?php echo $sept;  ?>, <?php echo $oct;  ?>, <?php echo $nov;  ?>, <?php echo $dec;  ?>];
-    // var barColors = ["#478ef2", "#478ef2", "#478ef2", "#478ef2", "#478ef2", "#478ef2", "#478ef2", "#478ef2"];
-    
+    var salesValues = <?php echo json_encode($salesData); ?>;
+    var pigInValues = <?php echo json_encode($pigInData); ?>;
+    var pigOutValues = <?php echo json_encode($pigOutData); ?>;
 
     new Chart("myChart", {
       type: "line",
       data: {
         labels: xValues,
-        datasets: [{
-          
-          borderColor: "#478ef2",
-          data: yValues
-        }]
+        datasets: [
+          {
+            label: "Sales",
+            data: salesValues,
+            borderColor: "#478ef2",
+            fill: false,
+            tension: 0.4
+          },
+          {
+            label: "Pigs In",
+            data: pigInValues,
+            borderColor: "#32CD32",
+            fill: false,
+            tension: 0.4
+          },
+          {
+            label: "Pigs Out",
+            data: pigOutData,
+            borderColor: "#FF6347",
+            fill: false,
+            tension: 0.4
+          }
+        ]
       },
       options: {
-        legend: {
-          display: false
-        },
+        responsive: true,
         title: {
           display: true,
-          text: "Annual Sales ( <?= number_format($total_sales) ?> )"
+          text: "Annual Sales and Pig Movement ( Total Sales: <?= number_format($total_sales) ?> )"
         },
         scales: {
-      yAxes: [{ticks: {min: 0}}],
-    }
+          yAxes: [{
+            ticks: {
+              beginAtZero: true
+            }
+          }]
+        },
+        legend: {
+          display: true,
+          position: 'top'
+        }
       }
     });
   </script>
@@ -316,5 +328,5 @@
 
 </div>
 
-
 <?php include 'theme/foot.php'; ?>
+</document_content>s
