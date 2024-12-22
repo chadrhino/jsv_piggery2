@@ -12,6 +12,8 @@ if (isset($_GET['page'])) {
     require $path . "$page.php";
   }
 
+  echo "helli wirld";
+
 }else{
   require $path . "home.php";
 }
