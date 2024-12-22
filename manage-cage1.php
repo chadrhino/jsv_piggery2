@@ -17,7 +17,7 @@
 
   <div class="w3-container" style="padding-top:22px">
     <div class="w3-row">
-      <h2>Manage Pigs</h2>
+      <h2>Manage Cage 1</h2>
       <!-- <a title="Check to delete from list" onclick="SoldAll()" id="sold" class="btn btn-primary"><i class="fa fa-plus"> Sold All</i> -->
 				</a>
       <a href="add-pig.php" class="btn btn-sm btn-primary pull-right"><i class="fa fa-plus"></i> Add New Pig</a><br><br>
@@ -46,7 +46,7 @@
           </thead>
           <tbody>
             <?php
-            $all_pig = $db->query("SELECT p.*,b.name AS breed_name, c.name AS class_name, v.name AS vita_name, f.name AS feed_name  FROM pigs p LEFT JOIN breed b ON p.breed_id = b.id LEFT JOIN vitamins v ON p.vitamins_id = v.id LEFT JOIN classification c ON p.classification_id = c.id LEFT JOIN feed f ON p.feed_id = f.id WHERE p.status = 1 AND p.type IS NULL ORDER BY p.id DESC ");
+            $all_pig = $db->query("SELECT p.*,b.name AS breed_name, c.name AS class_name, v.name AS vita_name, f.name AS feed_name  FROM pigs p LEFT JOIN breed b ON p.breed_id = b.id LEFT JOIN vitamins v ON p.vitamins_id = v.id LEFT JOIN classification c ON p.classification_id = c.id LEFT JOIN feed f ON p.feed_id = f.id WHERE p.status = 1 AND cc AND p.type IS NULL ORDER BY p.id DESC ");
             $fetch = $all_pig->fetchAll(PDO::FETCH_OBJ);
             foreach ($fetch as $data) {
               // $get_breed = $db->query("SELECT * FROM breed WHERE id = '$data->breed_id'");
