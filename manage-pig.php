@@ -90,9 +90,9 @@
                       <ul class="dropdown-menu dropdown-menu-right">
                         <li><a href="edit-pig.php?id=<?php echo $data->id ?>"><i class="fa fa-edit"></i> Edit</a></li>
                         <li><a onclick="return showDelete(<?= $data->id ?>)"><i class="fa fa-trash"></i> Delete</a></li>
-                        <li><a onclick="return showAnay(<?= $data->id ?>, '<?= $data->gender ?>')" style="cursor: pointer;"><i class="fa fa-paper-plane"></i> To Cage 1</a></li>
-                        <li><a onclick="return showAnay(<?= $data->id ?>, '<?= $data->gender ?>')" style="cursor: pointer;"><i class="fa fa-paper-plane"></i> To Cage 2</a></li>
-                        <li><a onclick="return showAnay(<?= $data->id ?>, '<?= $data->gender ?>')" style="cursor: pointer;"><i class="fa fa-paper-plane"></i> To Cage 3</a></li>
+                        <li><a onclick="return showCage(<?= $data->id ?>, '<?= $data->gender ?>', 1)" style="cursor: pointer;"><i class="fa fa-paper-plane"></i> To Cage 1</a></li>
+                        <li><a onclick="return showCage(<?= $data->id ?>, '<?= $data->gender ?>', 2)" style="cursor: pointer;"><i class="fa fa-paper-plane"></i> To Cage 2</a></li>
+                        <li><a onclick="return showCage(<?= $data->id ?>, '<?= $data->gender ?>', 3)" style="cursor: pointer;"><i class="fa fa-paper-plane"></i> To Cage 3</a></li>
                         <li><a onclick="return showAnay(<?= $data->id ?>, '<?= $data->gender ?>')" style="cursor: pointer;"><i class="fa fa-paper-plane"></i> Sow Pig</a></li>
                         <li><a onclick="return showQuarantine(<?= $data->id ?>)" style="cursor: pointer;"><i class="fa fa-paper-plane"></i> Quarantine Pig</a></li>
                         <li><a onclick="return showSold(<?= $data->id ?>)" style="cursor: pointer;"><i class="fa fa-paper-plane"></i> Sold Pig</a></li>
@@ -158,6 +158,20 @@
   function showAnay(x,gender) {
     Swal.fire({
       title: "Is this pig a Sow?",
+      showDenyButton: true,
+      confirmButtonText: "Yes",
+      denyButtonText: `No`
+    }).then((result) => {
+      /* Read more about isConfirmed, isDenied below */
+      if (result.isConfirmed) {
+        window.location.href = "manage-pig.php?anay&id=" + x + "&gender=" + gender
+      }
+    });
+  }
+
+  function showCage(x,gender, cage) {
+    Swal.fire({
+      title: "Do you want to transfer this pig to cage " + cage  "?",
       showDenyButton: true,
       confirmButtonText: "Yes",
       denyButtonText: `No`
