@@ -90,6 +90,9 @@
                       <ul class="dropdown-menu dropdown-menu-right">
                         <li><a href="edit-pig.php?id=<?php echo $data->id ?>"><i class="fa fa-edit"></i> Edit</a></li>
                         <li><a onclick="return showDelete(<?= $data->id ?>)"><i class="fa fa-trash"></i> Delete</a></li>
+                        <li><a onclick="return showAnay(<?= $data->id ?>, '<?= $data->gender ?>')" style="cursor: pointer;"><i class="fa fa-paper-plane"></i> To Cage 1</a></li>
+                        <li><a onclick="return showAnay(<?= $data->id ?>, '<?= $data->gender ?>')" style="cursor: pointer;"><i class="fa fa-paper-plane"></i> To Cage 2</a></li>
+                        <li><a onclick="return showAnay(<?= $data->id ?>, '<?= $data->gender ?>')" style="cursor: pointer;"><i class="fa fa-paper-plane"></i> To Cage 3</a></li>
                         <li><a onclick="return showAnay(<?= $data->id ?>, '<?= $data->gender ?>')" style="cursor: pointer;"><i class="fa fa-paper-plane"></i> Sow Pig</a></li>
                         <li><a onclick="return showQuarantine(<?= $data->id ?>)" style="cursor: pointer;"><i class="fa fa-paper-plane"></i> Quarantine Pig</a></li>
                         <li><a onclick="return showSold(<?= $data->id ?>)" style="cursor: pointer;"><i class="fa fa-paper-plane"></i> Sold Pig</a></li>
