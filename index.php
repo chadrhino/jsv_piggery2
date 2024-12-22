@@ -1,5 +1,7 @@
 <?php 
 require 'users/header.php';
+
+echo "helli wirld";
 $path = "users/pages/";
 if (isset($_GET['page'])) {
   $page = $_GET['page'];
@@ -12,7 +14,7 @@ if (isset($_GET['page'])) {
     require $path . "$page.php";
   }
 
-  echo "helli wirld";
+
 
 }else{
   require $path . "home.php";
