@@ -178,7 +178,7 @@
     }).then((result) => {
       /* Read more about isConfirmed, isDenied below */
       if (result.isConfirmed) {
-        window.location.href = "addto-cage.php?id=" + x + "&cage=" + cage;
+        window.location.href = "manage-pig.php?id=" + x + "&cage=" + cage;
       }
     });
   }
