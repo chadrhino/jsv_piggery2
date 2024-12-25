@@ -178,7 +178,7 @@
     }).then((result) => {
       /* Read more about isConfirmed, isDenied below */
       if (result.isConfirmed) {
-        window.location.href = "manage-pig.php?anay&id=" + x + "&gender=" + gender
+        window.location.href = "addto-cage.php?id=" + x + "&cage=" + cage;
       }
     });
   }
@@ -260,4 +260,5 @@ if (isset($_GET['anay'])) {
 
 }
 
+include('addto-cage.php');
 include 'theme/foot.php'; ?>
