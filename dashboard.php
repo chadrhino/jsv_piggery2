@@ -242,6 +242,10 @@
   <div class="w3-container dont-print" style="padding-top:22px">
     <canvas id="pieChart" style="width:100%;"></canvas>
   </div>
+
+  <div class="w3-container dont-print" style="padding-top:22px">
+    <canvas id="barChart" style="width:100%;"></canvas>
+  </div>
   
 
 
@@ -319,6 +323,28 @@
         title: {
           display: true,
           text: "World Wide Wine Production 2018"
+        }
+      }
+    });
+
+    var xValuesBar = ["Italy", "France"];
+    var yValuesBar = [55, 49];
+    var barColorsBar = ["red", "blue"];
+
+    new Chart("barChart", {
+      type: "bar",
+      data: {
+        labels: xValuesBar,
+        datasets: [{
+          backgroundColor: barColorsBar,
+          data: yValuesBar
+        }]
+      },
+      options: {
+        legend: {display: false},
+        title: {
+          display: true,
+          text: "World Wine Production 2018"
         }
       }
     });
