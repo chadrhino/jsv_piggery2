@@ -24,7 +24,7 @@ if (isset($_GET['cage'])) {
                   icon: "success",
                   title: "Pig added to cage <?= $cage ?>"
                 }).then(function(){
-                  location.reload();
+                  location.replace(location.href);
                 });
       </script>
         <?php 
