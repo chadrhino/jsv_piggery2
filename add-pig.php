@@ -37,6 +37,7 @@
 						$n_gender = $_POST['gender'];
 						$n_desc = $_POST['description'];
 						$n_month = $_POST['month'];
+						$cage = $_POST['cage'];
 
 
 						$res1_name = basename($_FILES['pigphoto']['name']);
@@ -63,7 +64,7 @@
 
 
 
-					$insert = $db->query("INSERT INTO pigs(pigno,weight,arrived,breed_id, classification_id, feed_id, vitamins_id,remark,health_status,img,gender,description,month) VALUES('$n_pigno','$n_weight','$n_arrived','$n_breed','$n_classification', '$n_feed', '$n_vitamins', '$n_remark','$n_status','$path1','$n_gender','$n_desc', '$n_month') ");
+					$insert = $db->query("INSERT INTO pigs(pigno,weight,arrived,breed_id, classification_id, feed_id, vitamins_id,remark,health_status,img,gender,description,month,cage_num) VALUES('$n_pigno','$n_weight','$n_arrived','$n_breed','$n_classification', '$n_feed', '$n_vitamins', '$n_remark','$n_status','$path1','$n_gender','$n_desc', '$n_month', $cage) ");
 
 					if ($insert) { ?>
 						<!-- <div class="alert alert-success alert-dismissable">
