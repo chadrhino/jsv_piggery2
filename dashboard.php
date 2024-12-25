@@ -345,6 +345,11 @@
         title: {
           display: true,
           text: "World Wine Production 2018"
+        },
+        scales: {
+          y: {
+            beginAtZero: true
+          }
         }
       }
     });
