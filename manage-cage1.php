@@ -89,7 +89,6 @@
                         <ul class="dropdown-menu dropdown-menu-right">
                         <li><a href="edit-pig.php?id=<?php echo $data->id ?>"><i class="fa fa-edit"></i> Edit</a></li>
                         <li><a onclick="return showDelete(<?= $data->id ?>)"><i class="fa fa-trash"></i> Delete</a></li>
-                        <li><a onclick="return showCage(<?= $data->id ?>, '<?= $data->gender ?>', '1')" style="cursor: pointer;"><i class="fa fa-paper-plane"></i> To Cage 1</a></li>
                         <li><a onclick="return showCage(<?= $data->id ?>, '<?= $data->gender ?>', '2')" style="cursor: pointer;"><i class="fa fa-paper-plane"></i> To Cage 2</a></li>
                         <li><a onclick="return showCage(<?= $data->id ?>, '<?= $data->gender ?>', '3')" style="cursor: pointer;"><i class="fa fa-paper-plane"></i> To Cage 3</a></li>
                         <li><a onclick="return showAnay(<?= $data->id ?>, '<?= $data->gender ?>')" style="cursor: pointer;"><i class="fa fa-paper-plane"></i> Sow Pig</a></li>
@@ -140,7 +139,7 @@
     });
   }
 
-  function showQuarantine(x) {
+  function showQuarantine(x, page) {
     Swal.fire({
       title: "Do you want to add this to quarantine?",
       showDenyButton: true,
@@ -149,7 +148,7 @@
     }).then((result) => {
       /* Read more about isConfirmed, isDenied below */
       if (result.isConfirmed) {
-        window.location.href = "quarantine.php?id=" + x
+        window.location.href = "quarantine.php?id=" + x + "&page=" + page
       }
     });
   }
@@ -182,7 +181,7 @@
     });
   }
 
-  function showDelete(x) {
+  function showDelete(x, page) {
     Swal.fire({
       title: "Do you want to delete this to pig?",
       showDenyButton: true,
@@ -191,7 +190,7 @@
     }).then((result) => {
       /* Read more about isConfirmed, isDenied below */
       if (result.isConfirmed) {
-        window.location.href = "delete.php?id=" + x
+        window.location.href = "delete.php?id=" + x + "&page=" + page
       }
     });
   }

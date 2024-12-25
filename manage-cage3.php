@@ -91,7 +91,6 @@
                         <li><a onclick="return showDelete(<?= $data->id ?>)"><i class="fa fa-trash"></i> Delete</a></li>
                         <li><a onclick="return showCage(<?= $data->id ?>, '<?= $data->gender ?>', '1')" style="cursor: pointer;"><i class="fa fa-paper-plane"></i> To Cage 1</a></li>
                         <li><a onclick="return showCage(<?= $data->id ?>, '<?= $data->gender ?>', '2')" style="cursor: pointer;"><i class="fa fa-paper-plane"></i> To Cage 2</a></li>
-                        <li><a onclick="return showCage(<?= $data->id ?>, '<?= $data->gender ?>', '3')" style="cursor: pointer;"><i class="fa fa-paper-plane"></i> To Cage 3</a></li>
                         <li><a onclick="return showAnay(<?= $data->id ?>, '<?= $data->gender ?>')" style="cursor: pointer;"><i class="fa fa-paper-plane"></i> Sow Pig</a></li>
                         <li><a onclick="return showQuarantine(<?= $data->id ?>)" style="cursor: pointer;"><i class="fa fa-paper-plane"></i> Quarantine Pig</a></li>
                         <li><a onclick="return showSold(<?= $data->id ?>)" style="cursor: pointer;"><i class="fa fa-paper-plane"></i> Sold Pig</a></li>
