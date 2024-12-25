@@ -278,8 +278,22 @@
     });
 
     // PIE CHART
-    var xValuesPie = ["Italy", "France", "Spain", "USA", "Argentina"];
-    var yValuesPie = [55, 49, 44, 24, 15];
+    var xValuesPie = [
+    "Pig", "Sow", "Quarantine", 
+    "Sold", "Breed(s)", "Vitamin(s)", 
+    "Feed(s)", "Classification", "User(s)"
+    ];
+    var yValuesPie = [
+    <?= $pCount; ?>, 
+    <?= $sowCount; ?>, 
+    <?= $quarantine; ?>,
+    <?= $sold; ?>, 
+    <?= $bCount; ?>, 
+    <?= $vCount; ?>, 
+    <?= $fCount; ?>,
+    <?= $cCount; ?>, 
+    <?= $uCount; ?>
+    ];
     var barColorsPie = [
       "#b91d47",
       "#00aba9",
