@@ -20,7 +20,6 @@
       <h2>Manage Cage 1</h2>
       <!-- <a title="Check to delete from list" onclick="SoldAll()" id="sold" class="btn btn-primary"><i class="fa fa-plus"> Sold All</i> -->
 				</a>
-      <a href="add-pig.php" class="btn btn-sm btn-primary pull-right"><i class="fa fa-plus"></i> Add New Pig</a><br><br>
       <form method="POST" class="table-responsive">
         <table class="table table-hover table-striped" id="table">
           <thead>
@@ -46,7 +45,7 @@
           </thead>
           <tbody>
             <?php
-            $all_pig = $db->query("SELECT p.*,b.name AS breed_name, c.name AS class_name, v.name AS vita_name, f.name AS feed_name  FROM pigs p LEFT JOIN breed b ON p.breed_id = b.id LEFT JOIN vitamins v ON p.vitamins_id = v.id LEFT JOIN classification c ON p.classification_id = c.id LEFT JOIN feed f ON p.feed_id = f.id WHERE p.status = 1 AND p.cage_num = 1 AND p.type IS NULL ORDER BY p.id DESC ");
+            $all_pig = $db->query("SELECT p.*,b.name AS breed_name, c.name AS class_name, v.name AS vita_name, f.name AS feed_name  FROM pigs p LEFT JOIN breed b ON p.breed_id = b.id LEFT JOIN vitamins v ON p.vitamins_id = v.id LEFT JOIN classification c ON p.classification_id = c.id LEFT JOIN feed f ON p.feed_id = f.id WHERE p.status = 1 AND p.cage_num IS NULL AND p.type IS NULL ORDER BY p.id DESC ");
             $fetch = $all_pig->fetchAll(PDO::FETCH_OBJ);
             foreach ($fetch as $data) {
               // $get_breed = $db->query("SELECT * FROM breed WHERE id = '$data->breed_id'");
@@ -90,6 +89,8 @@
                       <ul class="dropdown-menu dropdown-menu-right">
                         <li><a href="edit-pig.php?id=<?php echo $data->id ?>"><i class="fa fa-edit"></i> Edit</a></li>
                         <li><a onclick="return showDelete(<?= $data->id ?>)"><i class="fa fa-trash"></i> Delete</a></li>
+                        <li><a onclick="return showCage(<?= $data->id ?>, '<?= $data->gender ?>', '2')" style="cursor: pointer;"><i class="fa fa-paper-plane"></i> To Cage 2</a></li>
+                        <li><a onclick="return showCage(<?= $data->id ?>, '<?= $data->gender ?>', '3')" style="cursor: pointer;"><i class="fa fa-paper-plane"></i> To Cage 3</a></li>
                         <li><a onclick="return showAnay(<?= $data->id ?>, '<?= $data->gender ?>')" style="cursor: pointer;"><i class="fa fa-paper-plane"></i> Sow Pig</a></li>
                         <li><a onclick="return showQuarantine(<?= $data->id ?>)" style="cursor: pointer;"><i class="fa fa-paper-plane"></i> Quarantine Pig</a></li>
                         <li><a onclick="return showSold(<?= $data->id ?>)" style="cursor: pointer;"><i class="fa fa-paper-plane"></i> Sold Pig</a></li>
@@ -162,6 +163,20 @@
       /* Read more about isConfirmed, isDenied below */
       if (result.isConfirmed) {
         window.location.href = "manage-pig.php?anay&id=" + x + "&gender=" + gender
+      }
+    });
+  }
+
+  function showCage(x,gender, cage) {
+    Swal.fire({
+      title: "Do you want to transfer this pig to cage " + cage + "?",
+      showDenyButton: true,
+      confirmButtonText: "Yes",
+      denyButtonText: `No`
+    }).then((result) => {
+      /* Read more about isConfirmed, isDenied below */
+      if (result.isConfirmed) {
+        window.location.href = "manage-pig.php?id=" + x + "&cage=" + cage;
       }
     });
   }
@@ -243,4 +258,5 @@ if (isset($_GET['anay'])) {
 
 }
 
+include('addto-cage.php');
 include 'theme/foot.php'; ?>
