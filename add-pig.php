@@ -173,12 +173,27 @@
 						</select>
 					</div>
 
-					<div class="form-group">
-						<label class="control-label">Health Status</label>
-						<select name="status" class="form-control" required>
-							<option value="active">Active</option>
-							<option value="sick">Sick</option>
-						</select>
+					<div class="row gap-2">
+						<div class="col-md-6">
+							<div class="form-group">
+								<label class="control-label">Health Status</label>
+								<select name="status" class="form-control" required>
+									<option value="active">Active</option>
+									<option value="sick">Sick</option>
+								</select>
+							</div>
+						</div>
+						<div class="col-md-6">
+							<div class="form-group">
+								<label class="control-label">Pig Cage</label>
+								<select name="cage" class="form-control" required>
+									<option value="" selected>N/A</option>
+									<option value="1">Cage 1</option>
+									<option value="2">Cage 2</option>
+									<option value="3">Cage 3</option>
+								</select>
+							</div>
+						</div>
 					</div>
 
 					<div class="row gap-2">
