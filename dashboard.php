@@ -239,6 +239,12 @@
   ?>
 
 
+  <div class="w3-container dont-print" style="padding-top:22px">
+    <canvas id="pieChart" style="width:100%;"></canvas>
+  </div>
+  
+
+
   <script>
     var xValues = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
     var yValues = [<?php echo $jan;  ?>, <?php echo $feb;  ?>, <?php echo $mar;  ?>, <?php echo $apr;  ?>, <?php echo $may;  ?>, <?php echo $jun;  ?>, <?php echo $july;  ?>, <?php echo $aug;  ?>, <?php echo $sept;  ?>, <?php echo $oct;  ?>, <?php echo $nov;  ?>, <?php echo $dec;  ?>];
@@ -270,7 +276,36 @@
         }
       }
     });
+
+    // PIE CHART
+    var xValuesPie = ["Italy", "France", "Spain", "USA", "Argentina"];
+    var yValuesPie = [55, 49, 44, 24, 15];
+    var barColorsPie = [
+      "#b91d47",
+      "#00aba9",
+      "#2b5797",
+      "#e8c3b9",
+      "#1e7145"
+    ];
+
+    new Chart("pieChart", {
+      type: "pie",
+      data: {
+        labels: xValuesPie,
+        datasets: [{
+          backgroundColor: barColorsPie,
+          data: yValuesPie
+        }]
+      },
+      options: {
+        title: {
+          display: true,
+          text: "World Wide Wine Production 2018"
+        }
+      }
+    });
   </script>
+  
 
   <script>
     $(document).ready(function() {
