@@ -328,7 +328,7 @@
     });
 
     var xValuesBar = ["Pig In History", "Pig Out History"];
-    var yValuesBar = [<?= $get_history_enter->rowCount() ?>, 49];
+    var yValuesBar = [<?= $get_history_enter->rowCount() ?>, <?= $sold ?>];
     var barColorsBar = ["#2b5797", "#2b5797"];
 
     new Chart("barChart", {
