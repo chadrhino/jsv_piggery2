@@ -327,9 +327,9 @@
       }
     });
 
-    var xValuesBar = ["Italy", "France"];
+    var xValuesBar = ["Pig In History", "Pig Out History"];
     var yValuesBar = [55, 49];
-    var barColorsBar = ["red", "blue"];
+    var barColorsBar = ["#2b5797", "#2b5797"];
 
     new Chart("barChart", {
       type: "bar",
