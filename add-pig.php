@@ -37,6 +37,7 @@
 						$n_gender = $_POST['gender'];
 						$n_desc = $_POST['description'];
 						$n_month = $_POST['month'];
+						$cage = $_POST['cage'];
 
 
 						$res1_name = basename($_FILES['pigphoto']['name']);
@@ -63,7 +64,7 @@
 
 
 
-					$insert = $db->query("INSERT INTO pigs(pigno,weight,arrived,breed_id, classification_id, feed_id, vitamins_id,remark,health_status,img,gender,description,month) VALUES('$n_pigno','$n_weight','$n_arrived','$n_breed','$n_classification', '$n_feed', '$n_vitamins', '$n_remark','$n_status','$path1','$n_gender','$n_desc', '$n_month') ");
+					$insert = $db->query("INSERT INTO pigs(pigno,weight,arrived,breed_id, classification_id, feed_id, vitamins_id,remark,health_status,img,gender,description,month,cage_num) VALUES('$n_pigno','$n_weight','$n_arrived','$n_breed','$n_classification', '$n_feed', '$n_vitamins', '$n_remark','$n_status','$path1','$n_gender','$n_desc', '$n_month', $cage) ");
 
 					if ($insert) { ?>
 						<!-- <div class="alert alert-success alert-dismissable">
@@ -173,12 +174,27 @@
 						</select>
 					</div>
 
-					<div class="form-group">
-						<label class="control-label">Health Status</label>
-						<select name="status" class="form-control" required>
-							<option value="active">Active</option>
-							<option value="sick">Sick</option>
-						</select>
+					<div class="row gap-2">
+						<div class="col-md-6">
+							<div class="form-group">
+								<label class="control-label">Health Status</label>
+								<select name="status" class="form-control" required>
+									<option value="active">Active</option>
+									<option value="sick">Sick</option>
+								</select>
+							</div>
+						</div>
+						<div class="col-md-6">
+							<div class="form-group">
+								<label class="control-label">Pig Cage</label>
+								<select name="cage" class="form-control" required>
+									<option value="" selected>N/A</option>
+									<option value="1">Cage 1</option>
+									<option value="2">Cage 2</option>
+									<option value="3">Cage 3</option>
+								</select>
+							</div>
+						</div>
 					</div>
 
 					<div class="row gap-2">

@@ -239,6 +239,16 @@
   ?>
 
 
+  <div class="w3-container dont-print" style="padding-top:22px">
+    <canvas id="pieChart" style="width:100%;"></canvas>
+  </div>
+
+  <div class="w3-container dont-print" style="padding-top:22px">
+    <canvas id="barChart" style="width:100%;"></canvas>
+  </div>
+  
+
+
   <script>
     var xValues = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
     var yValues = [<?php echo $jan;  ?>, <?php echo $feb;  ?>, <?php echo $mar;  ?>, <?php echo $apr;  ?>, <?php echo $may;  ?>, <?php echo $jun;  ?>, <?php echo $july;  ?>, <?php echo $aug;  ?>, <?php echo $sept;  ?>, <?php echo $oct;  ?>, <?php echo $nov;  ?>, <?php echo $dec;  ?>];
@@ -270,7 +280,82 @@
         }
       }
     });
+
+    // PIE CHART
+    var xValuesPie = [
+    "Pig", "Sow", "Quarantine", 
+    "Sold", "Breed(s)", "Vitamin(s)", 
+    "Feed(s)", "Classification", "User(s)"
+    ];
+    var yValuesPie = [
+    <?= $pCount; ?>, 
+    <?= $sowCount; ?>, 
+    <?= $quarantine; ?>,
+    <?= $sold; ?>, 
+    <?= $bCount; ?>, 
+    <?= $vCount; ?>, 
+    <?= $fCount; ?>,
+    <?= $cCount; ?>, 
+    <?= $uCount; ?>
+    ];
+    var barColorsPie = [
+      "#b91d47",
+      "#00aba9",
+      "#2b5797",
+      "#e8c3b9",
+      "#1e7145",
+      "#b91d47",
+      "#00aba9",
+      "#2b5797",
+      "#e8c3b9"
+    ];
+
+    new Chart("pieChart", {
+      type: "pie",
+      data: {
+        labels: xValuesPie,
+        datasets: [{
+          backgroundColor: barColorsPie,
+          data: yValuesPie
+        }]
+      },
+      options: {
+        title: {
+          display: true,
+          text: "World Wide Wine Production 2018"
+        }
+      }
+    });
+
+    var xValuesBar = ["Pig In History", "Pig Out History"];
+    var yValuesBar = [<?= $get_history_enter->rowCount() ?>, <?= $sold ?>];
+    var barColorsBar = ["#2b5797", "#2b5797"];
+
+    new Chart("barChart", {
+      type: "bar",
+      data: {
+        labels: xValuesBar,
+        datasets: [{
+          backgroundColor: barColorsBar,
+          data: yValuesBar
+        }]
+      },
+      options: {
+        legend: {display: false},
+        title: {
+          display: true,
+          text: "World Wine Production 2018"
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            min: 0
+          }
+        }
+      }
+    });
   </script>
+  
 
   <script>
     $(document).ready(function() {
