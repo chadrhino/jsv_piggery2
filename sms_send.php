@@ -236,7 +236,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <div class="container">
         <!-- Place logo here at the top -->
         <div class="logo">
-            <img src="" alt="Logo"> <!-- Replace with your logo path -->
+        <img src="img/pig14.jpg" class="w3-circle w3-margin-right" style="width:46px"> <!-- Replace with your logo path -->
         </div>
 
         <h2>Enter Your Phone Number</h2>
