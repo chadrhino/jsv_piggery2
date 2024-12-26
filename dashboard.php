@@ -322,7 +322,7 @@
       options: {
         title: {
           display: true,
-          text: "World Wide Wine Production 2018"
+          text: "Farm Overview"
         }
       }
     });
@@ -344,7 +344,7 @@
         legend: {display: false},
         title: {
           display: true,
-          text: "World Wine Production 2018"
+          text: "Farm Overview"
         },
         scales: {
           y: {
