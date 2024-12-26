@@ -7,7 +7,7 @@
 		<h1 class="text-center"><?php echo NAME_X; ?></h1><br>
         <h5 class="text-center">Forgot Password</h5>
    <div class="col-md-2 col-md-offset-2">
-     <img src="img/pig.png" class="img img-responsive">
+     <img src="img/pig14.jpg" class="img img-responsive">
    </div>
 		<div class="col-md-4">
 			<form method="post" autocomplete="off">
